@@ -1,6 +1,5 @@
 package com.hashirbaig.android.photogallery;
 
-import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
@@ -14,9 +13,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,7 +71,7 @@ public class FlickrFetchr {
             String jsonString = getUrlString(url);
             Log.i(TAG, "Received JSON: " + jsonString);
             JSONObject jsonObject = new JSONObject(jsonString);
-            images.addAll(parseGsonArray(jsonObject));
+            images = parseGsonArray(jsonObject);
             int i = 0;
 
             Iterator<GalleryItem> itr = images.iterator();

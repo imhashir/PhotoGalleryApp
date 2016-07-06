@@ -19,7 +19,6 @@ public class PhotoGalleryFragment extends Fragment{
     private RecyclerView mRecyclerView;
     private static int page = 1;
     private List<GalleryItem> mItems = new ArrayList<>();
-    private FlickrFetchr mFetcher;
     private PhotoAdapter mAdapter;
 
     public static Fragment newInstance() {
@@ -30,7 +29,6 @@ public class PhotoGalleryFragment extends Fragment{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        mFetcher = new FlickrFetchr();
         new FetchItemsTask().execute();
     }
 
@@ -56,6 +54,12 @@ public class PhotoGalleryFragment extends Fragment{
         return v;
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mAdapter = null;
+    }
+
     private void setupAdapter () {
 
         if(isAdded()) {
@@ -74,7 +78,7 @@ public class PhotoGalleryFragment extends Fragment{
         private static final String TAG = "AsyncTask";
         @Override
         protected List<GalleryItem> doInBackground(Void... params) {
-            return mFetcher.fetchItems(page);
+            return new FlickrFetchr().fetchItems(page);
         }
 
         @Override
