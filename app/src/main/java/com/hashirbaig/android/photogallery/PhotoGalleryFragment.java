@@ -17,7 +17,6 @@ import java.util.List;
 public class PhotoGalleryFragment extends Fragment{
 
     private RecyclerView mRecyclerView;
-    private static final int NO_OF_COLS = 3;
     private static int page = 1;
     private List<GalleryItem> mItems = new ArrayList<>();
     private FlickrFetchr mFetcher;
@@ -40,7 +39,7 @@ public class PhotoGalleryFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_photo_gallery, container, false);
         mRecyclerView = (RecyclerView) v.findViewById(R.id.fragment_photo_gallery_recycler_view);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), NO_OF_COLS));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), new Integer(getResources().getInteger(R.integer.no_of_cols))));
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
