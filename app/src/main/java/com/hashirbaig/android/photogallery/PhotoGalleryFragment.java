@@ -1,8 +1,11 @@
 package com.hashirbaig.android.photogallery;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -34,8 +37,16 @@ public class PhotoGalleryFragment extends Fragment{
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         new FetchItemsTask().execute();
+        Handler handler = new Handler();
 
-        mThumbnailDownloader = new ThumbnailDownloader();
+        mThumbnailDownloader = new ThumbnailDownloader<>(handler);
+        mThumbnailDownloader.setThumbnailDownloadListener(new ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder>() {
+            @Override
+            public void onThumbnailDownloaded(PhotoHolder photoHolder, Bitmap bitmap) {
+                Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+                photoHolder.bindImage(drawable);
+            }
+        });
         mThumbnailDownloader.start();
         mThumbnailDownloader.getLooper();
         Log.i(TAG, "Background thread Started");
@@ -72,8 +83,8 @@ public class PhotoGalleryFragment extends Fragment{
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mThumbnailDownloader.cleanQueue();
         mThumbnailDownloader.quit();
-        Log.i(TAG, "Background thread closed");
     }
 
     private void setupAdapter () {
@@ -117,6 +128,10 @@ public class PhotoGalleryFragment extends Fragment{
         public void bindImage(Drawable drawable) {
             mGalleryImage.setImageDrawable(drawable);
         }
+
+        public ImageView getImageView() {
+            return mGalleryImage;
+        }
     }
 
     private class PhotoAdapter extends RecyclerView.Adapter<PhotoHolder> {
@@ -136,8 +151,8 @@ public class PhotoGalleryFragment extends Fragment{
 
         @Override
         public void onBindViewHolder(PhotoHolder holder, int position) {
-            holder.bindImage(getResources().getDrawable(R.drawable.bill_up_close));
-            mThumbnailDownloader.queueThumbnail(holder, mItems.get(position).getUrl());
+            GalleryItem item = mItems.get(position);
+            mThumbnailDownloader.queueThumbnail(holder, item.getUrl());
         }
 
         @Override
