@@ -43,10 +43,13 @@ public class PhotoGalleryFragment extends Fragment{
         mThumbnailDownloader.setThumbnailDownloadListener(new ThumbnailDownloader.ThumbnailDownloadListener<PhotoHolder>() {
             @Override
             public void onThumbnailDownloaded(PhotoHolder photoHolder, Bitmap bitmap) {
-                Drawable drawable = new BitmapDrawable(getResources(), bitmap);
-                photoHolder.bindImage(drawable);
+                if(isAdded()) {
+                    Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+                    photoHolder.bindImage(drawable);
+                }
             }
         });
+
         mThumbnailDownloader.start();
         mThumbnailDownloader.getLooper();
         Log.i(TAG, "Background thread Started");
@@ -84,7 +87,14 @@ public class PhotoGalleryFragment extends Fragment{
     public void onDestroyView() {
         super.onDestroyView();
         mThumbnailDownloader.cleanQueue();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         mThumbnailDownloader.quit();
+        mThumbnailDownloader.cleanCache();
+        Log.i(TAG, "Background thread destroyed");
     }
 
     private void setupAdapter () {
@@ -110,8 +120,10 @@ public class PhotoGalleryFragment extends Fragment{
 
         @Override
         protected void onPostExecute(List<GalleryItem> items) {
-            mItems.addAll(items);
-            setupAdapter();
+            if(isAdded()) {
+                mItems.addAll(items);
+                setupAdapter();
+            }
         }
     }
 
