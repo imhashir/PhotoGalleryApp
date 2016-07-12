@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +68,7 @@ public class PhotoGalleryFragment extends Fragment{
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if(!recyclerView.canScrollVertically(1)) {
+                    mThumbnailDownloader.clearPreloadQueue();
                     page++;
                     new FetchItemsTask().execute();
                 }
@@ -93,7 +95,6 @@ public class PhotoGalleryFragment extends Fragment{
     public void onDestroy() {
         super.onDestroy();
         mThumbnailDownloader.quit();
-        mThumbnailDownloader.cleanCache();
         Log.i(TAG, "Background thread destroyed");
     }
 
@@ -165,11 +166,24 @@ public class PhotoGalleryFragment extends Fragment{
         public void onBindViewHolder(PhotoHolder holder, int position) {
             GalleryItem item = mItems.get(position);
             mThumbnailDownloader.queueThumbnail(holder, item.getUrl());
+            try {
+                preloadThumbnails(position);
+            } catch (IOException ioe) {
+                Log.e(TAG, "Thumbnail couldn't be preloaded");
+            }
         }
 
         @Override
         public int getItemCount() {
             return mImages.size();
+        }
+    }
+
+    void preloadThumbnails(int position) throws IOException{
+        final int THRESHOLD = 10;
+        for(int x = position - THRESHOLD; x < position + THRESHOLD; x++) {
+            if(x >= 0 && x < mItems.size())
+                mThumbnailDownloader.queuePreload(mItems.get(x).getUrl());
         }
     }
 }

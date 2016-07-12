@@ -9,6 +9,8 @@ import android.support.v4.util.LruCache;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -16,6 +18,7 @@ public class ThumbnailDownloader<T> extends HandlerThread {
 
     private static final String TAG = "ThumbnailDownloader";
     private static final int MESSAGE_DOWNLOAD = 0;
+    private static final int MESSAGE_PRELOAD = 1;
 
     private Handler mRequestHandler;
     private ConcurrentMap<T, String> mRequestMap = new ConcurrentHashMap<>();
@@ -23,9 +26,12 @@ public class ThumbnailDownloader<T> extends HandlerThread {
     private ThumbnailDownloadListener mThumbnailDownloadListener;
     private LruCache<String, Bitmap> mThumbnailCache = new LruCache<>(10 * 1024 * 1024);
 
+    private List<String> mDownloadingUrls;
+
     public ThumbnailDownloader(Handler handler){
         super(TAG);
         mResponseHandler = handler;
+        mDownloadingUrls = new ArrayList<>();
     }
 
     public interface ThumbnailDownloadListener<T> {
@@ -44,6 +50,12 @@ public class ThumbnailDownloader<T> extends HandlerThread {
                     T target = (T) msg.obj;
                     Log.i(TAG, "Got a request of message " + mRequestMap.get(target));
                     handleRequest(target);
+                } else if(msg.what == MESSAGE_PRELOAD) {
+                    try {
+                        loadImageToCache((String) msg.obj);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         };
@@ -84,6 +96,7 @@ public class ThumbnailDownloader<T> extends HandlerThread {
                     }
 
                     mRequestMap.remove(target);
+                    mDownloadingUrls.remove(url);
                     mThumbnailDownloadListener.onThumbnailDownloaded(target, bitmap);
                 }
             });
@@ -97,16 +110,25 @@ public class ThumbnailDownloader<T> extends HandlerThread {
         mRequestHandler.removeMessages(MESSAGE_DOWNLOAD);
     }
 
+    public void clearPreloadQueue() {
+        mRequestHandler.removeMessages(MESSAGE_PRELOAD);
+    }
+
     public void cleanCache() {
         mThumbnailCache.evictAll();
     }
 
     public void loadImageToCache(String url) throws IOException{
-        if(mThumbnailCache.get(url) == null) {
+        if(mThumbnailCache.get(url) == null && !mDownloadingUrls.contains(url)) {
+            mDownloadingUrls.add(url);
             byte[] bytes = new FlickrFetchr().getUrlBytes(url);
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
             Log.i(TAG, "Image downloaded successfully");
             mThumbnailCache.put(url, bitmap);
         }
+    }
+
+    public void queuePreload(String url) {
+        mRequestHandler.obtainMessage(MESSAGE_PRELOAD, url).sendToTarget();
     }
 }
