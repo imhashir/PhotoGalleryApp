@@ -8,6 +8,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -22,10 +24,10 @@ public class PhotoGalleryFragment extends Fragment{
 
     private static final String TAG = "PhotoGalleryFragment";
     private RecyclerView mRecyclerView;
-    private static int page = 1;
     private List<GalleryItem> mItems = new ArrayList<>();
     private PhotoAdapter mAdapter;
     private ThumbnailDownloader mThumbnailDownloader;
+    private static int page = 0;
 
     public static Fragment newInstance() {
         return new PhotoGalleryFragment();
@@ -36,6 +38,7 @@ public class PhotoGalleryFragment extends Fragment{
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         new FetchItemsTask().execute();
+        setHasOptionsMenu(true);
         /*
         Handler handler = new Handler();
         mThumbnailDownloader = new ThumbnailDownloader<>(handler);
@@ -68,7 +71,6 @@ public class PhotoGalleryFragment extends Fragment{
                 super.onScrolled(recyclerView, dx, dy);
                 if(!recyclerView.canScrollVertically(1)) {
                     //mThumbnailDownloader.clearPreloadQueue();
-                    page++;
                     new FetchItemsTask().execute();
                 }
             }
@@ -115,7 +117,12 @@ public class PhotoGalleryFragment extends Fragment{
         private static final String TAG = "AsyncTask";
         @Override
         protected List<GalleryItem> doInBackground(Void... params) {
-            return new FlickrFetchr().fetchItems(page);
+            String query = "cats";
+            page++;
+            if(query == null)
+                return new FlickrFetchr().getRecentFlickr(page);
+            else
+                return new FlickrFetchr().getSearchResults(query, page);
         }
 
         @Override
@@ -190,5 +197,11 @@ public class PhotoGalleryFragment extends Fragment{
             if(x >= 0 && x < mItems.size())
                 mThumbnailDownloader.queuePreload(mItems.get(x).getUrl());
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_photo_gallery, menu);
     }
 }
