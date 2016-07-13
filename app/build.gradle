@@ -27,4 +27,5 @@ dependencies {
     repositories { mavenCentral() }
     compile files('libs/gson-2.7-javadoc.jar')
     compile 'com.google.code.gson:gson:2.7'
+    compile 'com.squareup.picasso:picasso:2.3.2'
 }

@@ -114,10 +114,6 @@ public class ThumbnailDownloader<T> extends HandlerThread {
         mRequestHandler.removeMessages(MESSAGE_PRELOAD);
     }
 
-    public void cleanCache() {
-        mThumbnailCache.evictAll();
-    }
-
     public void loadImageToCache(String url) throws IOException{
         if(mThumbnailCache.get(url) == null && !mDownloadingUrls.contains(url)) {
             mDownloadingUrls.add(url);
