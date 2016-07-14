@@ -1,3 +1,6 @@
+/*This is fully functional class for downloading Thumbnail from Flickr however this
+* class is no more implemented in this app as it's working is replaced by Picasso Library. */
+
 package com.hashirbaig.android.photogallery;
 
 import android.graphics.Bitmap;

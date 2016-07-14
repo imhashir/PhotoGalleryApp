@@ -1,3 +1,7 @@
+/*This file contains a lot of commented code. The working of that code is replaced by Picasso library
+* and I just couldn't delete that whole code because it took me two days understanding and writing
+* that shit down. All that code is fully working. To implement that code, just comment Picasso Library
+* implementation and uncomment everything else. */
 package com.hashirbaig.android.photogallery;
 
 import android.os.AsyncTask;
@@ -16,7 +20,6 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +29,7 @@ public class PhotoGalleryFragment extends Fragment{
     private RecyclerView mRecyclerView;
     private List<GalleryItem> mItems = new ArrayList<>();
     private PhotoAdapter mAdapter;
-    private ThumbnailDownloader mThumbnailDownloader;
+    //private ThumbnailDownloader mThumbnailDownloader;
     private static int page = 0;
 
     public static Fragment newInstance() {
@@ -190,7 +193,7 @@ public class PhotoGalleryFragment extends Fragment{
             return mImages.size();
         }
     }
-
+    /*
     void preloadThumbnails(int position) throws IOException{
         final int THRESHOLD = 10;
         for(int x = position - THRESHOLD; x < position + THRESHOLD; x++) {
@@ -198,7 +201,7 @@ public class PhotoGalleryFragment extends Fragment{
                 mThumbnailDownloader.queuePreload(mItems.get(x).getUrl());
         }
     }
-
+    */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
