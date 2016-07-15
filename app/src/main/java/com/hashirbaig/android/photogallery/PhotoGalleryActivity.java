@@ -7,4 +7,5 @@ public class PhotoGalleryActivity extends SingleFragmentActivity {
     public Fragment createFragment() {
         return PhotoGalleryFragment.newInstance();
     }
+
 }

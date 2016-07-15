@@ -1,6 +1,6 @@
 /*This file contains a lot of commented code. The working of that code is replaced by Picasso library
 * and I just couldn't delete that whole code because it took me two days understanding and writing
-* that shit down. All that code is fully working. To implement that code, just comment Picasso Library
+* that shit. All that code is fully working. To implement that code, just comment Picasso Library
 * implementation and uncomment everything else. */
 package com.hashirbaig.android.photogallery;
 
@@ -83,6 +83,7 @@ public class PhotoGalleryFragment extends Fragment{
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         updateItems();
+        Log.i(TAG, "Background thread Started");
         setHasOptionsMenu(true);
         /*
         Handler handler = new Handler();
@@ -100,7 +101,6 @@ public class PhotoGalleryFragment extends Fragment{
         mThumbnailDownloader.start();
         mThumbnailDownloader.getLooper();
         */
-        Log.i(TAG, "Background thread Started");
     }
 
     @Nullable
@@ -230,6 +230,13 @@ public class PhotoGalleryFragment extends Fragment{
         searchView.setIconifiedByDefault(true);
         searchView.setIconified(true);
 
+        MenuItem pollMenu = menu.findItem(R.id.menu_item_start_polling);
+        if(PollService.isServiceAlarmOn(getActivity())) {
+            pollMenu.setTitle(R.string.stop_polling);
+        } else {
+            pollMenu.setTitle(R.string.start_polling);
+        }
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -267,6 +274,12 @@ public class PhotoGalleryFragment extends Fragment{
                 QueryPreferences.setQueryString(getActivity(), null);
                 page = 0;
                 updateItems();
+                return true;
+            case R.id.menu_item_start_polling:
+                boolean shouldStartAlarm = !PollService.isServiceAlarmOn(getActivity());
+                PollService.setAlarmService(getActivity(), shouldStartAlarm);
+                Log.i(TAG, "Polling: " + (shouldStartAlarm ? "Started" : "Stopped"));
+                getActivity().invalidateOptionsMenu();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
