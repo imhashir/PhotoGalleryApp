@@ -161,7 +161,6 @@ public class PhotoGalleryFragment extends Fragment{
     private class PhotoHolder extends RecyclerView.ViewHolder{
 
         private ImageView mGalleryImage;
-        private GalleryItem mImage;
 
         public PhotoHolder(View itemView) {
             super(itemView);
