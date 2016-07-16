@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|center_vertical"
-        android:id="@+id/progress_bar"
+        android:id="@+id/list_load_progress"
         android:visibility="invisible"/>
 
 </FrameLayout>

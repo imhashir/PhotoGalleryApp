@@ -19,6 +19,7 @@
             </intent-filter>
         </activity>
         <service android:name=".PollService"/>
+        <activity android:name=".OnClickImageActivity"></activity>
     </application>
 
 </manifest>

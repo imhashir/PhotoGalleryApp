@@ -4,6 +4,7 @@
 * implementation and uncomment everything else. */
 package com.hashirbaig.android.photogallery;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -109,7 +110,7 @@ public class PhotoGalleryFragment extends Fragment{
         View v = inflater.inflate(R.layout.fragment_photo_gallery, container, false);
         mRecyclerView = (RecyclerView) v.findViewById(R.id.fragment_photo_gallery_recycler_view);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), new Integer(getResources().getInteger(R.integer.no_of_cols))));
-        mProgressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
+        mProgressBar = (ProgressBar) v.findViewById(R.id.list_load_progress);
         mProgressBar.setVisibility(View.VISIBLE);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -158,22 +159,31 @@ public class PhotoGalleryFragment extends Fragment{
 
     }
 
-    private class PhotoHolder extends RecyclerView.ViewHolder{
+    private class PhotoHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private ImageView mGalleryImage;
+        private GalleryItem mItem;
 
         public PhotoHolder(View itemView) {
             super(itemView);
             mGalleryImage = (ImageView) itemView.findViewById(R.id.gallery_item_image);
+            itemView.setOnClickListener(this);
         }
 
         public void bindImage(GalleryItem item) {
+            mItem = item;
             Picasso.with(getActivity())
-                    .load(item.getUrl())
+                    .load(mItem.getUrl())
                     .into(mGalleryImage);
             //mGalleryImage.setImageDrawable(drawable);
         }
 
+        @Override
+        public void onClick(View v) {
+            Log.i(TAG, "Image Selected");
+            Intent intent = OnClickImageActivity.newIntent(getActivity(), mItem.getOriginalUrl());
+            startActivity(intent);
+        }
     }
 
     private class PhotoAdapter extends RecyclerView.Adapter<PhotoHolder> {

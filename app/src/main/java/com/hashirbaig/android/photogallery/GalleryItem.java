@@ -13,6 +13,9 @@ public class GalleryItem {
     @SerializedName("url_s")
     private String mUrl;
 
+    @SerializedName("url_o")
+    private String mOriginalUrl;
+
     @Override
     public String toString() {
         return mCaption;
@@ -36,5 +39,9 @@ public class GalleryItem {
 
     public void setUrl(String url) {
         mUrl = url;
+    }
+
+    public String getOriginalUrl() {
+        return mOriginalUrl;
     }
 }

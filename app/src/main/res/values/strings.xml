@@ -6,4 +6,6 @@
     <string name="stop_polling">Stop Polling</string>
     <string name="new_pics_title">New PhotoGallery Pictures</string>
     <string name="new_pics_text">You have got new pics in PhotoGallery!</string>
+    <string name="no_preview_text">Image Couldn\'t be loaded</string>
+
 </resources>
