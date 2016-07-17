@@ -1,5 +1,7 @@
 package com.hashirbaig.android.photogallery;
 
+import android.net.Uri;
+
 import com.google.gson.annotations.SerializedName;
 
 public class GalleryItem {
@@ -16,13 +18,12 @@ public class GalleryItem {
     @SerializedName("url_o")
     private String mOriginalUrl;
 
+    @SerializedName("owner")
+    private String mOwner;
+
     @Override
     public String toString() {
         return mCaption;
-    }
-
-    public void setCaption(String caption) {
-        mCaption = caption;
     }
 
     public String getId() {
@@ -37,8 +38,12 @@ public class GalleryItem {
         return mUrl;
     }
 
-    public void setUrl(String url) {
-        mUrl = url;
+    public Uri getPhotoPageUri() {
+        return Uri.parse("https://www.flickr.com/photos/")
+                .buildUpon()
+                .appendPath(mOwner)
+                .appendPath(mId)
+                .build();
     }
 
     public String getOriginalUrl() {

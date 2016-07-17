@@ -13,6 +13,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -67,7 +68,7 @@ public class PhotoGalleryFragment extends VisibleFragment{
         protected void onPostExecute(List<GalleryItem> items) {
 
             if(mProgressBar.getVisibility() == View.VISIBLE)
-                mFragment.showProgressBar(false);
+                showProgressBar(false);
 
             if(isAdded()) {
                 if(page == 1) {
@@ -168,6 +169,20 @@ public class PhotoGalleryFragment extends VisibleFragment{
             super(itemView);
             mGalleryImage = (ImageView) itemView.findViewById(R.id.gallery_item_image);
             itemView.setOnClickListener(this);
+            itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+                @Override
+                public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+                    menu.add(R.string.preview_image_text)
+                    .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            Intent i = PhotoPageActivity.newIntent(getActivity(), mItem.getPhotoPageUri());
+                            startActivity(i);
+                            return true;
+                        }
+                    });
+                }
+            });
         }
 
         public void bindImage(GalleryItem item) {
@@ -180,9 +195,9 @@ public class PhotoGalleryFragment extends VisibleFragment{
 
         @Override
         public void onClick(View v) {
-            Log.i(TAG, "Image Selected");
             Intent intent = OnClickImageActivity.newIntent(getActivity(), mItem.getOriginalUrl());
             startActivity(intent);
+            Log.i(TAG, "Image Selected");
         }
     }
 
